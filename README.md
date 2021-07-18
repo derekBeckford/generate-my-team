@@ -21,6 +21,9 @@
   📝
   
   Users are able to build their team of managers, engineers, and interns. Including details about their github, office number, and school the intern attends. All from a command line prompt using inquirer.  
+  
+  https://drive.google.com/file/d/1ndSoS5fgqAwRL5JVHu4ju7M9nUxngPTY/preview
+  
 
   ## Installation 
   🔽
