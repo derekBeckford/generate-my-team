@@ -8,7 +8,6 @@ test("set manager object", () => {
     "Delta",
     2,
     "delta@email.com",
-    "Manager",
     officeNumber
   );
   expect(employee.officeNumber).toBe(officeNumber);
@@ -16,7 +15,7 @@ test("set manager object", () => {
 
 test("get role to return manager", () => {
   const role = "Manager";
-  const employee = new Manager("Delta", 2, "delta@email.com", role);
+  const employee = new Manager("Delta", 2, "delta@email.com");
   expect(employee.getRole()).toBe(role);
 });
 
@@ -26,7 +25,6 @@ test("get office number", () => {
     "Delta",
     2,
     "delta@email.com",
-    "Manager",
     officeNumber
   );
   expect(employee.getOfficeNumber()).toBe(officeNumber);

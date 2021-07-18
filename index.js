@@ -1,14 +1,27 @@
 const inquierer = require("inquirer");
-const fs = require("fs");
 const util = require("util");
 const Employee = require("./lib/Employee");
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
 const inquirer = require("inquirer");
+const generatePage = require("./src/page-template");
+const { writeFile, copyFile } = require("./src/generate-site");
 
-async function prompt() {
-  response = await inquirer.prompt([
+var myEmployees = {};
+
+const employeePrompt = () => {
+  console.log(`
+  =================
+  Add a New Employee
+  =================
+  `);
+
+  if (!myEmployees.employees) {
+    myEmployees.employees = [];
+  }
+
+  return inquirer.prompt([
     {
       type: "input",
       name: "name",
@@ -17,7 +30,7 @@ async function prompt() {
         if (employeeName) {
           return true;
         } else {
-          console.log("PLease enter an employee name!");
+          console.log("Please enter an employee name!");
           return false;
         }
       },
@@ -55,11 +68,14 @@ async function prompt() {
       choices: ["Engineer", "Intern", "Manager"],
     },
   ]);
+};
 
+const employeeRolePrompt = async (response) => {
   roleClar = "";
+  let employee;
 
   if (response.role === "Engineer") {
-    roleClar = inquirer.prompt([
+    roleClar = await inquirer.prompt([
       {
         type: "input",
         name: "github",
@@ -74,7 +90,7 @@ async function prompt() {
         },
       },
     ]);
-    const engineer = new Engineer(
+    employee = new Engineer(
       response.name,
       response.id,
       response.email,
@@ -82,7 +98,7 @@ async function prompt() {
     );
   }
   if (response.role === "Manager") {
-    roleClar = inquirer.prompt([
+    roleClar = await inquirer.prompt([
       {
         type: "input",
         name: "officeNumber",
@@ -97,7 +113,7 @@ async function prompt() {
         },
       },
     ]);
-    const manager = new Manager(
+    employee = new Manager(
       response.name,
       response.id,
       response.email,
@@ -105,7 +121,7 @@ async function prompt() {
     );
   }
   if (response.role === "Intern") {
-    roleClar = inquirer.prompt([
+    roleClar = await inquirer.prompt([
       {
         type: "input",
         name: "school",
@@ -120,13 +136,54 @@ async function prompt() {
         },
       },
     ]);
-    const intern = new Intern(
-      response.employeeName,
+    employee = new Intern(
+      response.name,
       response.id,
       response.email,
       roleClar.school
     );
   }
-}
 
-prompt();
+  return employee;
+};
+
+const startInput = () => {
+  employeePrompt().then((input) => {
+    employeeRolePrompt(input).then((role) => {
+      return inquirer
+        .prompt([
+          {
+            type: "confirm",
+            name: "confirmAddEmployee",
+            message: "Would you like to add another employee to your roster?",
+            default: false,
+          },
+        ])
+        .then((confirmation) => {
+          myEmployees.employees.push(role);
+          if (confirmation.confirmAddEmployee) {
+            return startInput();
+          } else {
+            return generatePage(myEmployees);
+          }
+        })
+        .then((pageHTML) => {
+          console.log(pageHTML);
+          return writeFile(pageHTML);
+        })
+        .then((writeFileResponse) => {
+          console.log(writeFileResponse);
+          return copyFile();
+        });
+    });
+  });
+};
+
+startInput();
+
+// .then((copyFileResponse) => {
+//   console.log(copyFileResponse);
+// })
+// .catch((err) => {
+//   console.log(err);
+// });
