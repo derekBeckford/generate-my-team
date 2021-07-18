@@ -148,8 +148,8 @@ const employeeRolePrompt = async (response) => {
 };
 
 const startInput = () => {
-  employeePrompt().then((input) => {
-    employeeRolePrompt(input).then((role) => {
+  return employeePrompt().then((input) => {
+    return employeeRolePrompt(input).then((role) => {
       return inquirer
         .prompt([
           {
@@ -166,24 +166,23 @@ const startInput = () => {
           } else {
             return generatePage(myEmployees);
           }
-        })
-        .then((pageHTML) => {
-          console.log(pageHTML);
-          return writeFile(pageHTML);
-        })
-        .then((writeFileResponse) => {
-          console.log(writeFileResponse);
-          return copyFile();
         });
     });
   });
 };
 
-startInput();
-
-// .then((copyFileResponse) => {
-//   console.log(copyFileResponse);
-// })
-// .catch((err) => {
-//   console.log(err);
-// });
+startInput()
+  .then((pageHTML) => {
+    console.log(pageHTML);
+    return writeFile(pageHTML);
+  })
+  .then((writeFileResponse) => {
+    console.log(writeFileResponse);
+    return copyFile();
+  })
+  .then((copyFileResponse) => {
+    console.log(copyFileResponse);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
